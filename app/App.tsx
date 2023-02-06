@@ -3,9 +3,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SignUpScreen} from './screens/SignUpScreen';
 import {SignInScreen} from './screens/SignInScreen';
+import {RootStackParamList} from './screens/RootStackParams';
 
 function App(): JSX.Element {
-  const RootStack = createNativeStackNavigator();
+  const RootStack = createNativeStackNavigator<RootStackParamList>();
 
   return (
     <NavigationContainer>
