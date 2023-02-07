@@ -1,26 +1,20 @@
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  Touchable,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {StyleSheet, View} from 'react-native';
 import {InputWithErrorIcon} from '../UI/inputs/InputWithErrorIcon';
-import {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
-  validateEmail,
-  validatePassword,
-  validateRepeatPassword,
-  validateUsername,
+  validateEmailHOC,
+  validatePasswordHOC,
+  validateRepeatPasswordHOC,
+  validateUsernameHOC,
 } from '../utils/Validation';
 import {AuthButton} from '../UI/buttons/AuthButton';
-import {AppText} from '../UI/text/AppText';
-import {RootStackParamList} from './RootStackParams';
 import {AuthLayout} from '../layouts/AuthLayout';
 import {AuthTitle} from '../components/AuthTitle';
-import { AuthFooter } from '../components/AuthFooter';
+import {AuthFooter} from '../components/AuthFooter';
+import {isFailAuthResponse, requestRegistration} from '../api/auth';
+import {AuthContext} from '../context/AuthContext';
+import {AuthErrorsBlock} from '../components/AuthErrorsBlock';
+import {useToken} from '../hooks/useToken';
 
 export const SignUpScreen = () => {
   const [username, setUsername] = useState('');
@@ -28,10 +22,28 @@ export const SignUpScreen = () => {
   const [password, setPassword] = useState('');
   const [repeatPass, setRepeatPass] = useState('');
 
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [isError, setIsError] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
 
-  const submitData = () => {
-    console.log(username);
+  const {setIsAuth} = useContext(AuthContext);
+
+  const {setToken} = useToken();
+
+  const validateUsername = validateUsernameHOC(setIsError);
+  const validateEmail = validateEmailHOC(setIsError);
+  const validatePassword = validatePasswordHOC(setIsError);
+  const validateRepeatPassword = validateRepeatPasswordHOC(setIsError);
+
+  const submitData = async () => {
+    const response = await requestRegistration(username, password, email);
+    if (isFailAuthResponse(response)) {
+      console.log(JSON.stringify(response, null, 2));
+      setErrors(response.error || ['unknown error']);
+    } else {
+      console.log(JSON.stringify(response, null, 2));
+      await setToken(response.accessToken);
+      setIsAuth(true);
+    }
   };
 
   return (
@@ -71,13 +83,23 @@ export const SignUpScreen = () => {
             value={repeatPass}
             setValue={setRepeatPass}
             placeholder="Repeat password"
+            extraValue={password}
           />
         </View>
+        {errors.length ? <AuthErrorsBlock errors={errors} /> : null}
         <View style={styles.buttonWrapper}>
-          <AuthButton text="Create an account" onPress={submitData} />
+          <AuthButton
+            disabled={isError}
+            text="Create an account"
+            onPress={submitData}
+          />
         </View>
         <View style={styles.footerWrapper}>
-          <AuthFooter desctiption='Already have an account?' linkText='Log In' navigateTo='SignIn' />
+          <AuthFooter
+            description="Already have an account?"
+            linkText="Log In"
+            navigateTo="SignIn"
+          />
         </View>
       </View>
     </AuthLayout>
@@ -109,9 +131,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   buttonWrapper: {
-    marginTop: 50,
+    marginTop: 30,
   },
   footerWrapper: {
-    marginTop: 50,
+    marginTop: 30,
   },
 });

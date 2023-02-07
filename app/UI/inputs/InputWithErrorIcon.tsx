@@ -7,6 +7,7 @@ type TProps = {
   placeholder: string;
   value: string;
   setValue: Dispatch<string>;
+  extraValue?: string;
 };
 
 export const InputWithErrorIcon: FC<TProps> = ({
@@ -14,6 +15,7 @@ export const InputWithErrorIcon: FC<TProps> = ({
   setValue,
   placeholder,
   validateFunction,
+  extraValue,
 }) => {
   const [isError, setIsError] = useState(false);
   return (
@@ -23,7 +25,7 @@ export const InputWithErrorIcon: FC<TProps> = ({
         onChangeText={setValue}
         style={styles.input}
         placeholder={placeholder}
-        onBlur={() => setIsError(validateFunction(value))}
+        onBlur={() => setIsError(validateFunction(value, extraValue))}
       />
       {isError ? <ErrorIcon size={30} /> : null}
     </View>

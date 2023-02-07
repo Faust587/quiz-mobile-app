@@ -1,14 +1,15 @@
-import {FC} from 'react';
+import React, {FC} from 'react';
 import {StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 
 type TProps = {
   text: string;
   onPress: Function;
+  disabled: boolean;
 };
 
-export const AuthButton: FC<TProps> = ({text, onPress}) => {
+export const AuthButton: FC<TProps> = ({text, onPress, disabled}) => {
   return (
-    <TouchableOpacity onPress={() => onPress()}>
+    <TouchableOpacity onPress={() => onPress()} disabled={disabled}>
       <View style={styles.buttonContainer}>
         <Text style={styles.buttonText}>{text}</Text>
       </View>
