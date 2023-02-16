@@ -1,6 +1,6 @@
 import {StyleSheet, View} from 'react-native';
 import {InputWithErrorIcon} from '../UI/inputs/InputWithErrorIcon';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {
   validateEmailHOC,
   validatePasswordHOC,
@@ -9,12 +9,9 @@ import {
 } from '../utils/Validation';
 import {AuthButton} from '../UI/buttons/AuthButton';
 import {AuthLayout} from '../layouts/AuthLayout';
-import {AuthTitle} from '../components/AuthTitle';
-import {AuthFooter} from '../components/AuthFooter';
-import {isFailAuthResponse, requestRegistration} from '../api/auth';
-import {AuthContext} from '../context/AuthContext';
-import {AuthErrorsBlock} from '../components/AuthErrorsBlock';
-import {useToken} from '../hooks/useToken';
+import {AuthTitle} from '../components/auth/AuthTitle';
+import {AuthFooter} from '../components/auth/AuthFooter';
+import {AuthErrorsBlock} from '../components/auth/AuthErrorsBlock';
 
 export const SignUpScreen = () => {
   const [username, setUsername] = useState('');
@@ -25,26 +22,12 @@ export const SignUpScreen = () => {
   const [isError, setIsError] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
 
-  const {setIsAuth} = useContext(AuthContext);
-
-  const {setToken} = useToken();
-
   const validateUsername = validateUsernameHOC(setIsError);
   const validateEmail = validateEmailHOC(setIsError);
   const validatePassword = validatePasswordHOC(setIsError);
   const validateRepeatPassword = validateRepeatPasswordHOC(setIsError);
 
-  const submitData = async () => {
-    const response = await requestRegistration(username, password, email);
-    if (isFailAuthResponse(response)) {
-      console.log(JSON.stringify(response, null, 2));
-      setErrors(response.error || ['unknown error']);
-    } else {
-      console.log(JSON.stringify(response, null, 2));
-      await setToken(response.accessToken);
-      setIsAuth(true);
-    }
-  };
+  const submitData = async () => {};
 
   return (
     <AuthLayout>
@@ -71,6 +54,7 @@ export const SignUpScreen = () => {
         </View>
         <View style={styles.inputWrapper}>
           <InputWithErrorIcon
+            secure={true}
             validateFunction={validatePassword}
             value={password}
             setValue={setPassword}
@@ -79,6 +63,7 @@ export const SignUpScreen = () => {
         </View>
         <View style={styles.inputWrapper}>
           <InputWithErrorIcon
+            secure={true}
             validateFunction={validateRepeatPassword}
             value={repeatPass}
             setValue={setRepeatPass}

@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {AppText} from '../UI/text/AppText';
+import {AppText} from '../../UI/text/AppText';
 import {FC} from 'react';
 
 type TProps = {
