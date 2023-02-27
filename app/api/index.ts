@@ -1,6 +1,6 @@
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Config from 'react-native-config';
-import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 
 export const api = axios.create({
   withCredentials: true,
