@@ -4,6 +4,7 @@ import {ErrorIcon} from '../icons/ErrorIcon';
 
 type TProps = {
   validateFunction: (value1: string, value2?: string) => boolean;
+  secure?: boolean;
   placeholder: string;
   value: string;
   setValue: Dispatch<string>;
@@ -16,11 +17,13 @@ export const InputWithErrorIcon: FC<TProps> = ({
   placeholder,
   validateFunction,
   extraValue,
+  secure,
 }) => {
   const [isError, setIsError] = useState(false);
   return (
     <View style={styles.inputContainer}>
       <TextInput
+        secureTextEntry={secure}
         value={value}
         onChangeText={setValue}
         style={styles.input}

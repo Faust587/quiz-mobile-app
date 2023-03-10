@@ -1,56 +1,49 @@
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Config from 'react-native-config';
-import {useAsyncStorage} from '@react-native-async-storage/async-storage';
-import {useToken} from '../hooks/useToken';
 
 export const api = axios.create({
   withCredentials: true,
   baseURL: Config.API_URL,
 });
 
-api.interceptors.request.use(async config => {
-  const {getToken, isTokenExist} = useToken();
-  const isToken = await isTokenExist();
-  if (!isToken) {
-    return config;
-  }
-  const token = await getToken();
-  const accessToken = `Bearer ${token}`;
-  // @ts-ignore
-  config.headers = {
-    ...config.headers,
-    Authorization: accessToken,
-  };
-  return config;
+export const tokenApi = axios.create({
+  withCredentials: true,
+  baseURL: Config.API_URL,
 });
 
-type refreshTokenResponse = {
-  accessToken: string;
-};
+tokenApi.interceptors.response.use(
+  async config => config,
+  async error => error,
+);
+
+api.interceptors.request.use(
+  async config => {
+    const tokenStorage = await useAsyncStorage('token');
+    const token = await tokenStorage.getItem();
+    config.headers.Authorization = `Bearer ${token}`;
+    return config;
+  },
+  error => error,
+);
 
 api.interceptors.response.use(
   config => config,
   async error => {
-    const AsyncStorage = useAsyncStorage('token');
-    const originalRequest = error.config;
-    if (
-      error.response?.status === 401 &&
-      error.config &&
-      !error.config._isRetry
-    ) {
-      originalRequest.isRetry = true;
-      const tokensPair = await axios
-        .get<refreshTokenResponse>('http://localhost:4000/auth/refresh', {
-          withCredentials: true,
-        })
-        .catch(e => e);
-      if (axios.isAxiosError(tokensPair)) {
-        return tokensPair;
-      }
-      const {accessToken} = tokensPair.data;
-      await AsyncStorage.setItem(accessToken);
-      return api.request(originalRequest);
+    const statusCode = error.response.status;
+    if (error.config.isTokensUpdated && statusCode && statusCode === 401) {
+      return error;
     }
-    return error;
+    const tokenStorage = await useAsyncStorage('token');
+    const originalConfig = error.config;
+    originalConfig.isTokensUpdated = true;
+    const refreshingResult = await tokenApi.get<{accessToken: string}>(
+      'auth/refresh',
+    );
+    if (axios.isAxiosError(refreshingResult)) {
+      return error;
+    }
+    await tokenStorage.setItem(refreshingResult.data.accessToken);
+    return api.request(originalConfig);
   },
 );

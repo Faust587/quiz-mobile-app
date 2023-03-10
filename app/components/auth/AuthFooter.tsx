@@ -1,8 +1,8 @@
 import React, {FC} from 'react';
 import {useNavigation, NavigationProp} from '@react-navigation/native';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {AppText} from '../UI/text/AppText';
-import {AuthStackParamList} from '../navigation/AuthStack';
+import {AppText} from '../../UI/text/AppText';
+import {AuthStackParamList} from '../../navigation/AuthStack';
 
 type TProps = {
   description: string;
