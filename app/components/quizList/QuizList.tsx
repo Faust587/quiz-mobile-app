@@ -5,6 +5,7 @@ import {fetchQuizList} from '../../store';
 import {AppText} from '../../UI/text/AppText';
 import {OutlinedButton} from '../../UI/buttons/OutlinedButton';
 import {QuizListItem} from './QuizListItem';
+import {CopyIcon} from '../../UI/icons/CopyIcon';
 
 export const QuizList = () => {
   const dispatch = useAppDispatch();

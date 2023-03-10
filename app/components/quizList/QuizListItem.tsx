@@ -1,7 +1,8 @@
 import React, {FC} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {AppText} from '../../UI/text/AppText';
 import {TQuizLite} from '../../store/entity/Quiz';
+import {CopyIcon} from '../../UI/icons/CopyIcon';
 
 export const QuizListItem: FC<TQuizLite> = ({
   closed,
@@ -13,8 +14,15 @@ export const QuizListItem: FC<TQuizLite> = ({
   return (
     <View style={styles.itemWrapper}>
       <View style={styles.itemContainer}>
-        <View></View>
-        <View></View>
+        <View style={styles.parametersContainer}>
+          <View style={styles.codeContainer}>
+            <AppText>{`${code} `}</AppText>
+            <CopyIcon width={15} height={15} />
+          </View>
+          <View>
+            <AppText>3</AppText>
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -23,9 +31,17 @@ export const QuizListItem: FC<TQuizLite> = ({
 const styles = StyleSheet.create({
   itemWrapper: {
     margin: 20,
-    backgroundColor: 'red',
   },
   itemContainer: {
     padding: 20,
+    height: 120,
+    borderRadius: 10,
+    backgroundColor: '#ffffff',
+  },
+  parametersContainer: {},
+  codeContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

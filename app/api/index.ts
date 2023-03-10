@@ -1,15 +1,15 @@
 import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import Config from 'react-native-config';
+import {API_URL} from '@env';
 
 export const api = axios.create({
   withCredentials: true,
-  baseURL: Config.API_URL,
+  baseURL: API_URL,
 });
 
 export const tokenApi = axios.create({
   withCredentials: true,
-  baseURL: Config.API_URL,
+  baseURL: API_URL,
 });
 
 tokenApi.interceptors.response.use(
